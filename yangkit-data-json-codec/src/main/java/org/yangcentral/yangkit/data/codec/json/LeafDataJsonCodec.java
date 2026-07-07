@@ -23,12 +23,6 @@ public class LeafDataJsonCodec extends TypedDataJsonCodec<Leaf, LeafData<?>> {
         try {
             String yangText = getYangText(element);
             LeafData leafData = (LeafData) YangDataBuilderFactory.getBuilder().getYangData(getSchemaNode(), yangText);
-            TypedDataNode typedData = (TypedDataNode) leafData.getSchemaNode();
-            if (typedData.getType().getRestriction() instanceof IdentityRef){
-                leafData.getStringValue(new IdentityRefJsonCodec(typedData));
-            } else {
-                leafData.getStringValue();
-            }
             return leafData;
         } catch (YangDataJsonCodecException e) {
             ValidatorRecordBuilder<String, JsonNode> recordBuilder = new ValidatorRecordBuilder<>();
@@ -37,8 +31,6 @@ public class LeafDataJsonCodec extends TypedDataJsonCodec<Leaf, LeafData<?>> {
             recordBuilder.setBadElement(e.getBadElement());
             recordBuilder.setErrorMessage(e.getErrorMsg());
             validatorResultBuilder.addRecord(recordBuilder.build());
-        } catch (YangCodecException e) {
-            throw new RuntimeException(e);
         }
         return null;
     }

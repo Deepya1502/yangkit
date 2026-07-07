@@ -568,7 +568,19 @@ public class JsonCodecUtil {
         SchemaNodeContainer schemaNodeContainer = null;
         if (yangDataContainer instanceof YangDataDocument) {
             YangDataDocument doc = (YangDataDocument) yangDataContainer;
-            schemaNodeContainer = YangDataUtil.getSchemaNodeContainerForDocument(doc);
+            SchemaNodeContainer topLevelContainer = YangDataUtil.getSchemaNodeContainerForDocument(doc);
+            QName docQName = doc.getQName();
+            if (docQName != null) {
+                SchemaNode structureSchemaNode = topLevelContainer.getTreeNodeChild(docQName);
+                if (structureSchemaNode instanceof SchemaNodeContainer) {
+                    // Covers both YangStructure and regular containers (e.g. anydata root like huawei-debug:debug)
+                    schemaNodeContainer = (SchemaNodeContainer) structureSchemaNode;
+                } else {
+                    schemaNodeContainer = topLevelContainer;
+                }
+            } else {
+                schemaNodeContainer = topLevelContainer;
+            }
         } else {
             YangData<?> yangData = (YangData<?>) yangDataContainer;
             schemaNodeContainer = (SchemaNodeContainer) yangData.getSchemaNode();
@@ -586,8 +598,14 @@ public class JsonCodecUtil {
                 continue;
             }
             QName qName = JsonCodecUtil.getQNameFromJsonField(fieldName,yangDataContainer);
+            if (qName == null) {
+                // Module prefix in the field name is not present in the schema context
+                // (module not loaded or not listed in YANG library). Skip leniently.
+                continue;
+            }
             SchemaNode sonSchemaNode = schemaNodeContainer.getTreeNodeChild(qName);
-            if (sonSchemaNode == null || !sonSchemaNode.isActive()) {
+            if (sonSchemaNode == null) {
+
                 ValidatorRecordBuilder<String, JsonNode> recordBuilder = new ValidatorRecordBuilder<>();
                 recordBuilder.setErrorTag(ErrorTag.UNKNOWN_ELEMENT);
                 recordBuilder.setErrorPath(extraValidationData.getJsonPath(child));
@@ -597,6 +615,8 @@ public class JsonCodecUtil {
                 validatorResultBuilder.addRecord(recordBuilder.build());
                 continue;
             }
+            // Note: isActive() is NOT checked here — inactive nodes (if-feature not satisfied)
+            // are parsed leniently. Activation constraints are enforced during doc.validate().
 
             validatorResultBuilder.merge(buildChildData(yangDataContainer,child,sonSchemaNode, extraValidationData,
                     resolver));
