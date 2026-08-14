@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.yangcentral.yangkit.common.api.QName;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
+import org.yangcentral.yangkit.data.api.model.LeafData;
+import org.yangcentral.yangkit.data.api.model.YangData;
+import org.yangcentral.yangkit.data.api.model.YangDataContainer;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 import org.yangcentral.yangkit.data.codec.xml.YangDataDocumentXmlCodec;
 import org.yangcentral.yangkit.data.impl.model.YangDataDocumentImpl;
@@ -26,6 +29,52 @@ import static org.junit.jupiter.api.Assertions.*;
  * - Config true/false filtering (Section 7.21.1)
  */
 public class XmlCodecBasicTest {
+
+    @Test
+    public void testDeserializationRecursivelyBuildsContainerAndListChildren() throws Exception {
+        URL yangUrl = this.getClass().getClassLoader().getResource("yang/test-basic.yang");
+        assertNotNull(yangUrl);
+
+        YangSchemaContext schemaContext = YangYinParser.parse(yangUrl.getFile());
+        assertTrue(schemaContext.validate().isOk());
+        String namespace = "urn:test:basic";
+        Document xmlDoc = DocumentHelper.parseText(
+                "<data><config xmlns=\"" + namespace + "\">"
+                        + "<name>router-1</name>"
+                        + "<server><id>primary</id><description>Main server</description>"
+                        + "<settings><mode>active</mode></settings></server>"
+                        + "</config></data>");
+
+        ValidatorResultBuilder validatorBuilder = new ValidatorResultBuilder();
+        YangDataDocument document = new YangDataDocumentXmlCodec(schemaContext)
+                .deserialize(xmlDoc, validatorBuilder);
+
+        assertTrue(validatorBuilder.build().isOk());
+        YangDataContainer config = onlyContainerChild(document, "config", namespace);
+        assertEquals("router-1", onlyLeafValue(config, "name", namespace));
+
+        YangDataContainer server = onlyContainerChild(config, "server", namespace);
+        assertEquals("primary", onlyLeafValue(server, "id", namespace));
+        assertEquals("Main server", onlyLeafValue(server, "description", namespace));
+
+        YangDataContainer settings = onlyContainerChild(server, "settings", namespace);
+        assertEquals("active", onlyLeafValue(settings, "mode", namespace));
+    }
+
+    private static YangDataContainer onlyContainerChild(
+            YangDataContainer parent, String name, String namespace) {
+        java.util.List<YangData<?>> children = parent.getDataChildren(name, namespace);
+        assertEquals(1, children.size(), "Expected one child named " + name);
+        assertTrue(children.get(0) instanceof YangDataContainer, name + " should be a data container");
+        return (YangDataContainer) children.get(0);
+    }
+
+    private static String onlyLeafValue(YangDataContainer parent, String name, String namespace) {
+        java.util.List<YangData<?>> children = parent.getDataChildren(name, namespace);
+        assertEquals(1, children.size(), "Expected one leaf named " + name);
+        assertTrue(children.get(0) instanceof LeafData, name + " should be a leaf");
+        return ((LeafData<?>) children.get(0)).getStringValue();
+    }
 
     /**
      * Test basic XML serialization and deserialization.

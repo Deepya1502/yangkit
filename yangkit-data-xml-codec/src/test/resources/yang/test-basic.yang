@@ -9,5 +9,20 @@ module test-basic {
         leaf enabled {
             type boolean;
         }
+        list server {
+            key "id";
+
+            leaf id {
+                type string;
+            }
+            leaf description {
+                type string;
+            }
+            container settings {
+                leaf mode {
+                    type string;
+                }
+            }
+        }
     }
 }

@@ -1,8 +1,5 @@
 package org.yangcentral.yangkit.data.codec.xml;
 
-import org.yangcentral.yangkit.common.api.exception.ErrorMessage;
-import org.yangcentral.yangkit.common.api.exception.ErrorTag;
-import org.yangcentral.yangkit.common.api.validate.ValidatorRecordBuilder;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.codec.AnydataValidationContextResolver;
@@ -12,12 +9,9 @@ import org.yangcentral.yangkit.data.api.exception.YangDataException;
 import org.yangcentral.yangkit.data.api.model.YangData;
 import org.yangcentral.yangkit.data.api.model.YangDataContainer;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
-import org.yangcentral.yangkit.data.api.operation.YangDataOperator;
 import org.yangcentral.yangkit.data.impl.model.YangDataDocumentImpl;
-import org.yangcentral.yangkit.data.impl.operation.YangDataOperatorImpl;
 import org.yangcentral.yangkit.data.impl.util.YangDataUtil;
 import org.yangcentral.yangkit.model.api.schema.YangSchemaContext;
-import org.yangcentral.yangkit.model.api.stmt.DataNode;
 import org.yangcentral.yangkit.model.api.stmt.SchemaNode;
 import org.yangcentral.yangkit.model.api.stmt.SchemaNodeContainer;
 import org.yangcentral.yangkit.utils.xml.Converter;
@@ -79,7 +73,13 @@ public class YangDataDocumentXmlCodec implements YangDataDocumentCodec<Element> 
                 if (childData != null) {
                     try {
                         yangDataContainer.addDataChild(childData);
-                    } catch (org.yangcentral.yangkit.data.api.exception.YangDataException e) {
+
+                        YangData<?> addedChild = yangDataContainer.getDataChild(childData.getIdentifier());
+                        if (addedChild instanceof YangDataContainer) {
+                            validatorResultBuilder.merge(
+                                    buildChildrenData((YangDataContainer) addedChild, child));
+                        }
+                    } catch (YangDataException e) {
                         // Log error but continue processing
                         System.err.println("Warning: Failed to add child data: " + e.getMessage());
                     }
@@ -214,4 +214,3 @@ public class YangDataDocumentXmlCodec implements YangDataDocumentCodec<Element> 
     }
 
 }
-
