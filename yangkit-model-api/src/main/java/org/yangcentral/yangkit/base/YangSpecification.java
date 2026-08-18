@@ -2,7 +2,6 @@ package org.yangcentral.yangkit.base;
 
 import org.yangcentral.yangkit.common.api.QName;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 /**
  * define the yang specification for YANG1.0(RFC6020) and YANG1.1(RFC7950)
@@ -42,18 +41,7 @@ public class YangSpecification {
  * @since 7/8/2022
  */
    public YangStatementDef getStatementDef(QName keyword) {
-      Iterator<Map.Entry<QName, YangStatementDef>> it = this.statementDefs.entrySet().iterator();
-
-      Map.Entry entry;
-      do {
-         if (!it.hasNext()) {
-            return null;
-         }
-
-         entry = (Map.Entry)it.next();
-      } while(!((QName)entry.getKey()).equals(keyword));
-
-      return (YangStatementDef)entry.getValue();
+      return this.statementDefs.get(keyword);
    }
 
    public Map<QName, YangStatementDef> getStatementDefs() {

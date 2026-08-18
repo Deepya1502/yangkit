@@ -276,6 +276,7 @@ public class UsesImpl extends DataDefinitionImpl implements Uses {
                   continue;
                }
             }
+
             break;
          }
 

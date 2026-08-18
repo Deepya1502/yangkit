@@ -22,7 +22,7 @@ public class GroupingImpl extends YangStatementImpl implements Grouping {
    private DataDefContainerImpl dataDefContainer = new DataDefContainerImpl();
    private GroupingDefContainerImpl groupingDefContainer = new GroupingDefContainerImpl();
    private NotificationContainerImpl notificationContainer = new NotificationContainerImpl();
-   private List<YangStatement> referencedBys = new ArrayList<>();
+   private ReferencableSupport referencableSupport = new ReferencableSupport();
    private TypedefContainerImpl typedefContainer = new TypedefContainerImpl();
 
    public void setContext(YangContext context) {
@@ -242,7 +242,27 @@ public class GroupingImpl extends YangStatementImpl implements Grouping {
    }
 
    public List<YangStatement> getReferencedBy() {
-      return this.referencedBys;
+      return this.referencableSupport.getReferencedBy();
+   }
+
+   @Override
+   public void addReference(YangStatement yangStatement) {
+      this.referencableSupport.addReference(yangStatement);
+   }
+
+   @Override
+   public void delReference(YangStatement yangStatement) {
+      this.referencableSupport.delReference(yangStatement);
+   }
+
+   @Override
+   public boolean isReferencedBy(YangStatement yangStatement) {
+      return this.referencableSupport.isReferencedBy(yangStatement);
+   }
+
+   @Override
+   public boolean isReferenced() {
+      return this.referencableSupport.isReferenced();
    }
 
    public List<YangStatement> getEffectiveSubStatements() {

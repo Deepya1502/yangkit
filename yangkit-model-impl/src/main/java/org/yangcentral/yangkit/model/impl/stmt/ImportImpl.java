@@ -14,6 +14,7 @@ import org.yangcentral.yangkit.model.api.stmt.MainModule;
 import org.yangcentral.yangkit.model.api.stmt.Module;
 import org.yangcentral.yangkit.model.api.stmt.Prefix;
 import org.yangcentral.yangkit.model.api.stmt.Reference;
+import org.yangcentral.yangkit.model.api.stmt.ReferencableSupport;
 import org.yangcentral.yangkit.model.api.stmt.RevisionDate;
 import org.yangcentral.yangkit.model.api.stmt.YangStatement;
 import org.yangcentral.yangkit.util.ModelUtil;
@@ -30,7 +31,7 @@ public class ImportImpl extends YangStatementImpl implements Import {
    private Description description;
    private Reference reference;
    private MainModule importedModule;
-   private List<YangStatement> referencedStmts = new ArrayList<>();
+   private ReferencableSupport referencableSupport = new ReferencableSupport();
 
    public ImportImpl(String argStr) {
       super(argStr);
@@ -51,7 +52,27 @@ public class ImportImpl extends YangStatementImpl implements Import {
 
    @Override
    public List<YangStatement> getReferencedBy() {
-      return referencedStmts;
+      return this.referencableSupport.getReferencedBy();
+   }
+
+   @Override
+   public void addReference(YangStatement yangStatement) {
+      this.referencableSupport.addReference(yangStatement);
+   }
+
+   @Override
+   public void delReference(YangStatement yangStatement) {
+      this.referencableSupport.delReference(yangStatement);
+   }
+
+   @Override
+   public boolean isReferencedBy(YangStatement yangStatement) {
+      return this.referencableSupport.isReferencedBy(yangStatement);
+   }
+
+   @Override
+   public boolean isReferenced() {
+      return this.referencableSupport.isReferenced();
    }
 
 

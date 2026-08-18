@@ -23,7 +23,7 @@ public class TypedefImpl extends YangStatementImpl implements Typedef {
    private Type type;
    private Units units;
    private Default aDefault;
-   private List<YangStatement> referencedBys = new ArrayList<>();
+   private ReferencableSupport referencableSupport = new ReferencableSupport();
 
    public TypedefImpl(String argStr) {
       super(argStr);
@@ -116,7 +116,27 @@ public class TypedefImpl extends YangStatementImpl implements Typedef {
 
 
    public List<YangStatement> getReferencedBy() {
-      return this.referencedBys;
+      return this.referencableSupport.getReferencedBy();
+   }
+
+   @Override
+   public void addReference(YangStatement yangStatement) {
+      this.referencableSupport.addReference(yangStatement);
+   }
+
+   @Override
+   public void delReference(YangStatement yangStatement) {
+      this.referencableSupport.delReference(yangStatement);
+   }
+
+   @Override
+   public boolean isReferencedBy(YangStatement yangStatement) {
+      return this.referencableSupport.isReferencedBy(yangStatement);
+   }
+
+   @Override
+   public boolean isReferenced() {
+      return this.referencableSupport.isReferenced();
    }
 
 

@@ -13,6 +13,7 @@ import org.yangcentral.yangkit.register.YangUnknownParserPolicy;
 import org.yangcentral.yangkit.register.YangUnknownRegister;
 import org.yangcentral.yangkit.util.ModelUtil;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,12 +69,21 @@ public interface YangBuiltinStatement extends YangStatement {
 
         Map<QName, YangSubStatementInfo> subStatementInfos = statementDef.getSubStatementInfos();
 
-        // check cardinality
+        // check cardinality: count sub-statements per keyword in a single pass over the
+        // sub-elements, instead of re-scanning them once per allowed keyword.
+        Map<QName, Integer> subStatementCounts = new HashMap<>();
+        for (YangElement subElement : ((YangStatement) this).getSubElements()) {
+            if (!(subElement instanceof YangStatement)) {
+                continue;
+            }
+            QName keyword = ((YangStatement) subElement).getYangKeyword();
+            Integer count = subStatementCounts.get(keyword);
+            subStatementCounts.put(keyword, count == null ? 1 : count + 1);
+        }
         for (QName key : subStatementInfos.keySet()) {
-            List<YangStatement> filteredStatements =
-                    ((YangStatement) this).getSubStatement(key);
+            Integer count = subStatementCounts.get(key);
             Cardinality cardinality = subStatementInfos.get(key).getCardinality();
-            if (!cardinality.isValid(filteredStatements.size())) {
+            if (!cardinality.isValid(count == null ? 0 : count)) {
                 validatorResultBuilder.addRecord(ModelUtil.reportError(
                         (YangStatement) this,
                         ErrorCode.CARDINALITY_BROKEN.getFieldName()
