@@ -23,12 +23,12 @@ public class YangContext {
    private Namespace curNamespace;
    private List<YangContext> mergedContexts = new ArrayList<>();
    private YangStatement self;
-   private Map<String, SchemaNode> SchemaNodeIdentifierCache = new ConcurrentHashMap();
-   private Map<String, Grouping> groupingIdentifierCache = new ConcurrentHashMap();
-   private Map<String, Typedef> typedefIdentifierCache = new ConcurrentHashMap();
-   private Map<String, Extension> extensionCache = new ConcurrentHashMap();
-   private Map<String, Feature> featureCache = new ConcurrentHashMap();
-   private Map<String, Identity> identityCache = new ConcurrentHashMap();
+   private volatile Map<String, SchemaNode> schemaNodeIdentifierCache;
+   private volatile Map<String, Grouping> groupingIdentifierCache;
+   private volatile Map<String, Typedef> typedefIdentifierCache;
+   private volatile Map<String, Extension> extensionCache;
+   private volatile Map<String, Feature> featureCache;
+   private volatile Map<String, Identity> identityCache;
 
    public YangContext(YangSchemaContext schemaContext, Module curModule) {
       this.schemaContext = schemaContext;
@@ -108,8 +108,9 @@ public class YangContext {
  * @since 7/8/2022
  */
    public Typedef getTypedef(String name) {
-      if (this.typedefIdentifierCache.containsKey(name)) {
-         return this.typedefIdentifierCache.get(name);
+      Map<String, Typedef> cache = this.typedefIdentifierCache;
+      if (cache != null && cache.containsKey(name)) {
+         return cache.get(name);
       } else {
          Iterator contextIterator = this.mergedContexts.iterator();
 
@@ -135,8 +136,9 @@ public class YangContext {
     * @since 7/8/2022
     */
    public Grouping getGrouping(String name) {
-      if (this.groupingIdentifierCache.containsKey(name)) {
-         return this.groupingIdentifierCache.get(name);
+      Map<String, Grouping> cache = this.groupingIdentifierCache;
+      if (cache != null && cache.containsKey(name)) {
+         return cache.get(name);
       } else {
          Iterator contextIterator = this.mergedContexts.iterator();
 
@@ -155,27 +157,87 @@ public class YangContext {
    }
 
    public Map<String, SchemaNode> getSchemaNodeIdentifierCache() {
-      return this.SchemaNodeIdentifierCache;
+      Map<String, SchemaNode> cache = this.schemaNodeIdentifierCache;
+      if (cache == null) {
+         synchronized (this) {
+            cache = this.schemaNodeIdentifierCache;
+            if (cache == null) {
+               cache = new ConcurrentHashMap<>();
+               this.schemaNodeIdentifierCache = cache;
+            }
+         }
+      }
+      return cache;
    }
 
    public Map<String, Grouping> getGroupingIdentifierCache() {
-      return this.groupingIdentifierCache;
+      Map<String, Grouping> cache = this.groupingIdentifierCache;
+      if (cache == null) {
+         synchronized (this) {
+            cache = this.groupingIdentifierCache;
+            if (cache == null) {
+               cache = new ConcurrentHashMap<>();
+               this.groupingIdentifierCache = cache;
+            }
+         }
+      }
+      return cache;
    }
 
    public Map<String, Typedef> getTypedefIdentifierCache() {
-      return this.typedefIdentifierCache;
+      Map<String, Typedef> cache = this.typedefIdentifierCache;
+      if (cache == null) {
+         synchronized (this) {
+            cache = this.typedefIdentifierCache;
+            if (cache == null) {
+               cache = new ConcurrentHashMap<>();
+               this.typedefIdentifierCache = cache;
+            }
+         }
+      }
+      return cache;
    }
 
    public Map<String, Extension> getExtensionCache() {
-      return this.extensionCache;
+      Map<String, Extension> cache = this.extensionCache;
+      if (cache == null) {
+         synchronized (this) {
+            cache = this.extensionCache;
+            if (cache == null) {
+               cache = new ConcurrentHashMap<>();
+               this.extensionCache = cache;
+            }
+         }
+      }
+      return cache;
    }
 
    public Map<String, Feature> getFeatureCache() {
-      return this.featureCache;
+      Map<String, Feature> cache = this.featureCache;
+      if (cache == null) {
+         synchronized (this) {
+            cache = this.featureCache;
+            if (cache == null) {
+               cache = new ConcurrentHashMap<>();
+               this.featureCache = cache;
+            }
+         }
+      }
+      return cache;
    }
 
    public Map<String, Identity> getIdentityCache() {
-      return this.identityCache;
+      Map<String, Identity> cache = this.identityCache;
+      if (cache == null) {
+         synchronized (this) {
+            cache = this.identityCache;
+            if (cache == null) {
+               cache = new ConcurrentHashMap<>();
+               this.identityCache = cache;
+            }
+         }
+      }
+      return cache;
    }
 
    public Namespace getNamespace() {

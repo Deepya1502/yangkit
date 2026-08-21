@@ -6,7 +6,7 @@ import org.yangcentral.yangkit.base.YangContext;
 import org.yangcentral.yangkit.common.api.exception.ErrorTag;
 import org.yangcentral.yangkit.common.api.exception.Severity;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
-import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
+import org.yangcentral.yangkit.model.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.model.api.restriction.Section;
 import org.yangcentral.yangkit.model.api.restriction.YangString;
 import org.yangcentral.yangkit.model.api.stmt.Typedef;

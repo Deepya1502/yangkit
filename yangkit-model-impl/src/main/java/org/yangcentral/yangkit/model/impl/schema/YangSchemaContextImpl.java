@@ -8,7 +8,7 @@ import org.yangcentral.yangkit.common.api.AbsolutePath;
 import org.yangcentral.yangkit.common.api.QName;
 import org.yangcentral.yangkit.common.api.XPathStep;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
-import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
+import org.yangcentral.yangkit.model.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.model.api.schema.ModuleId;
 import org.yangcentral.yangkit.model.api.schema.SchemaPath;
 import org.yangcentral.yangkit.model.api.schema.YangSchema;
