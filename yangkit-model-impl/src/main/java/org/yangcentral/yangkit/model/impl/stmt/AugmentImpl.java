@@ -5,7 +5,7 @@ import org.yangcentral.yangkit.common.api.QName;
 import org.yangcentral.yangkit.common.api.exception.ErrorTag;
 import org.yangcentral.yangkit.common.api.exception.Severity;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
-import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
+import org.yangcentral.yangkit.model.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.model.api.schema.SchemaPath;
 import org.yangcentral.yangkit.model.api.schema.SchemaTreeType;
 import org.yangcentral.yangkit.model.api.stmt.*;

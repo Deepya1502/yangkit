@@ -4,7 +4,7 @@ import org.yangcentral.yangkit.base.YangBuiltinKeyword;
 import org.yangcentral.yangkit.base.YangContext;
 import org.yangcentral.yangkit.common.api.QName;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
-import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
+import org.yangcentral.yangkit.model.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.model.api.stmt.DataNode;
 import org.yangcentral.yangkit.model.api.stmt.Must;
 import org.yangcentral.yangkit.model.api.stmt.YangBuiltinStatement;

@@ -3,7 +3,7 @@ package org.yangcentral.yangkit.model.impl.stmt;
 import org.yangcentral.yangkit.base.*;
 import org.yangcentral.yangkit.common.api.QName;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
-import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
+import org.yangcentral.yangkit.model.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.model.api.stmt.Choice;
 import org.yangcentral.yangkit.model.api.stmt.Config;
 import org.yangcentral.yangkit.model.api.stmt.ConfigSupport;

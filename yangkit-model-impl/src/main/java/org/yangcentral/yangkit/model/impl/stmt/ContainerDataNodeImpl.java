@@ -6,7 +6,7 @@ import org.yangcentral.yangkit.base.YangContext;
 import org.yangcentral.yangkit.base.YangElement;
 import org.yangcentral.yangkit.common.api.QName;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
-import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
+import org.yangcentral.yangkit.model.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.model.api.schema.mount.MountPoint;
 import org.yangcentral.yangkit.model.api.stmt.Action;
 import org.yangcentral.yangkit.model.api.stmt.ContainerDataNode;

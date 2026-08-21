@@ -8,7 +8,7 @@ import org.yangcentral.yangkit.base.YangStatementDef;
 import org.yangcentral.yangkit.base.YangSubStatementInfo;
 import org.yangcentral.yangkit.common.api.QName;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
-import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
+import org.yangcentral.yangkit.model.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.register.YangUnknownParserPolicy;
 import org.yangcentral.yangkit.register.YangUnknownRegister;
 import org.yangcentral.yangkit.util.ModelUtil;

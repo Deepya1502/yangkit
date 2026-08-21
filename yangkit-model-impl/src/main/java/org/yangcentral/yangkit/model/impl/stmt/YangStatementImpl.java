@@ -6,7 +6,7 @@ import org.yangcentral.yangkit.common.api.QName;
 import org.yangcentral.yangkit.common.api.exception.ErrorTag;
 import org.yangcentral.yangkit.common.api.exception.Severity;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
-import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
+import org.yangcentral.yangkit.model.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.model.api.stmt.*;
 import org.yangcentral.yangkit.model.api.stmt.Module;
 import org.yangcentral.yangkit.register.*;
@@ -15,7 +15,6 @@ import org.yangcentral.yangkit.util.ModelUtil;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class YangStatementImpl implements YangStatement {
    private YangContext context;
@@ -34,7 +33,7 @@ public abstract class YangStatementImpl implements YangStatement {
    private ValidatorResult initResult;
    private int lastSeq =0;
    private int seq = 0;
-   private final Map<BuildPhase, ValidatorResult> phaseResultMap = new ConcurrentHashMap<>();
+   private ValidatorResult[] phaseResults;
    private boolean isError = false;
    private YangStatement clonedBy;
    private boolean cleared = true;
@@ -361,14 +360,15 @@ public abstract class YangStatementImpl implements YangStatement {
             }
             if ((parserPolicy!= null && parserPolicy.getPhases().contains(buildPhase))
             || (this instanceof DefaultYangUnknown)) {
-               if (this.phaseResultMap.containsKey(buildPhase)) {
-                  validatorResultBuilder.merge(this.phaseResultMap.get(buildPhase));
+               ValidatorResult cachedPhaseResult = getPhaseResult(buildPhase);
+               if (cachedPhaseResult != null) {
+                  validatorResultBuilder.merge(cachedPhaseResult);
                } else {
                   if(this.getValidateResult() != null && this.getValidateResult().isOk()){
                      this.buildPhase = buildPhase;
                      selfResult = this.buildSelf(buildPhase);
 
-                     this.phaseResultMap.put(buildPhase, selfResult);
+                     setPhaseResult(buildPhase, selfResult);
                      this.setValidateResult(selfResult);
                      validatorResultBuilder.merge(selfResult);
                   }
@@ -717,7 +717,7 @@ public abstract class YangStatementImpl implements YangStatement {
       this.isError = false;
       this.clonedBy = null;
       this.initResult = null;
-      this.phaseResultMap.clear();
+      this.phaseResults = null;
       lastSeq = 0;
       seq = 0;
       cleared = true;
@@ -725,6 +725,20 @@ public abstract class YangStatementImpl implements YangStatement {
 
    public YangContext getContext() {
       return this.context;
+   }
+
+   private ValidatorResult getPhaseResult(BuildPhase buildPhase) {
+      if (this.phaseResults == null) {
+         return null;
+      }
+      return this.phaseResults[buildPhase.ordinal()];
+   }
+
+   private void setPhaseResult(BuildPhase buildPhase, ValidatorResult result) {
+      if (this.phaseResults == null) {
+         this.phaseResults = new ValidatorResult[BuildPhase.values().length];
+      }
+      this.phaseResults[buildPhase.ordinal()] = result;
    }
 
    public void setContext(YangContext context) {
