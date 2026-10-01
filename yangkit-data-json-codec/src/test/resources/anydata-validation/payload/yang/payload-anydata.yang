@@ -7,6 +7,19 @@ module payload-anydata {
     leaf value {
       type string;
     }
+
+    list item {
+      key "id";
+      unique "details/name";
+
+      leaf id {
+        type string;
+      }
+      container details {
+        leaf name {
+          type string;
+        }
+      }
+    }
   }
 }
-
